@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +18,7 @@ class ProductListScreen extends StatefulWidget {
 class _ProductListScreenState extends State<ProductListScreen> {
 
   List<ProductListModel> productList = [];
+  List<ProductListModel> cartList = [];
 
   int cartValue = 0;
 
@@ -41,7 +41,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       appBar: appbarWidget(cartValue),
-      body: productListWidget(productList),
+      body:  productListWidget(productList),
     );
   }
 
@@ -74,12 +74,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   )
               ),
               cartValue != 0 ?
-              badges.Badge(
-                badgeContent:
-                Text(cartValue.toString()),
+                  InkWell(
+                    child:  badges.Badge(
+                      badgeContent:
+                      Text(cartValue.toString()),
 
-                child: const Icon(Icons.shopping_cart_sharp),
-              )
+                      child: const Icon(Icons.shopping_cart_sharp),
+                    ),
+                    onTap: (){
+                      Provider.of<ProductListViewModel>(context, listen: false).createCartList();
+                    },
+                  )
                   : Container(child: const Icon(Icons.shopping_cart_sharp),)
 
             ],
@@ -150,7 +155,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           ]else...[
                             InkWell(
                               onTap: (){
-                                Provider.of<ProductListViewModel>(context, listen: false).addProductInCart(index);
+                               Provider.of<ProductListViewModel>(context, listen: false).addProductInCart(index);
                               },
                               child:   Container(
                                   width: 70,
@@ -169,8 +174,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       ),
                     )
                 ));
-
         });
-
   }
 }

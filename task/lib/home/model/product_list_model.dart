@@ -1,12 +1,20 @@
 import 'dart:convert';
 
+import 'package:hive/hive.dart';
+
+@HiveType(typeId: 1)
 class ProductListModel{
+
+  @HiveField(0)
   String productName;
+
+  @HiveField(1)
   String price;
+
+  @HiveField(2)
   int itemCount;
 
   ProductListModel({required this.productName,required this.price,required this.itemCount});
-
 
   factory ProductListModel.fromJson(Map<String, dynamic> jsonData) {
     return ProductListModel(
@@ -32,4 +40,6 @@ class ProductListModel{
       (json.decode(productList) as List<dynamic>)
           .map<ProductListModel>((item) => ProductListModel.fromJson(item))
           .toList();
+
 }
+
