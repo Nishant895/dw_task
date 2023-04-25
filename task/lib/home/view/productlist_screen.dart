@@ -18,9 +18,13 @@ class ProductListScreen extends StatefulWidget {
 class _ProductListScreenState extends State<ProductListScreen> {
 
   List<ProductListModel> productList = [];
+  List<ProductListModel>  _productFilteredList = [];
   List<ProductListModel> cartList = [];
 
   int cartValue = 0;
+  
+
+  final TextEditingController _searchQueryController = TextEditingController();
 
   @override
   void initState() {
@@ -41,7 +45,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       appBar: appbarWidget(cartValue),
-      body:  productListWidget(productList),
+      body: _searchQueryController.text.isEmpty
+      ?  
+      productListWidget(productList)
+      : productListWidget(_productFilteredList),
     );
   }
 
@@ -63,35 +70,39 @@ class _ProductListScreenState extends State<ProductListScreen> {
         child : Container(
           color: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children : [
-              const SizedBox(
-                  height: 50,
-                  child : Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text("Product list",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 20),),
-                  )
-              ),
-              cartValue != 0 ?
-                  InkWell(
-                    child:  badges.Badge(
-                      badgeContent:
-                      Text(cartValue.toString()),
-
-                      child: const Icon(Icons.shopping_cart_sharp),
-                    ),
-                    onTap: (){
-                      Provider.of<ProductListViewModel>(context, listen: false).createCartList();
-                    },
-                  )
-                  : Container(child: const Icon(Icons.shopping_cart_sharp),)
-
-            ],
+          child: TextField(
+            controller: _searchQueryController,
+            autofocus: false,
+            decoration: const InputDecoration(
+              hintText: "Search in product",
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top : -10.0),
+              hintStyle: TextStyle(color: Colors.black),
+            ),
+            style: const TextStyle(color: Colors.black, fontSize: 16.0,fontWeight: FontWeight.normal),
+            onChanged: (query) => updateSearchQuery(query),
+          ),
           ),
         ),
-      ),
     );
+  }
+
+  void updateSearchQuery(String newQuery) {
+    List<ProductListModel>? dummySearchList = [];
+    _productFilteredList = [];
+    for(int i = 0; i<productList.length ; i++){
+      if (productList[i].productName.toLowerCase().contains(newQuery.toLowerCase())) {
+        dummySearchList.add(productList[i]);
+      }
+    }
+
+    setState(() {
+      _productFilteredList.clear();
+      _productFilteredList.addAll(dummySearchList);
+
+    });
+
+
   }
   
   Widget productListWidget(List<ProductListModel> productList){
